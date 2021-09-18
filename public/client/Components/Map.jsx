@@ -22,25 +22,24 @@ function Map() {
       zoom,
     });
 
-    // Add a GeoJSON source containing the country polygons.
+    let hoveredStateId = null;
+    const randomNum = Math.random() * 255;
+    const MAPSOURCE = 'country-boundaries-simplified';
+    const MAP_ID = 'countries-simplification-data';
+    const MAP_SOURCE_LAYER = 'countries_polygons';
+
     map.current.on('load', () => {
-      map.current.addSource('states', {
-        type: 'geojson',
-        data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_countries.geojson',
-        // data: 'http://inmagik.github.io/world-countries/countries/ITA.geojson',
-
+      map.current.addSource(MAPSOURCE, {
+        type: 'vector',
+        url: 'mapbox://examples.countries-simplification',
       });
-
-      // Shade all country polygons
-      let hoveredStateId = null;
-      const randomNum = Math.random() * 255;
-      console.log(randomNum);
       map.current.addLayer({
-        id: 'states-layer',
+        id: MAP_ID,
         type: 'fill',
-        source: 'states',
+        source: MAPSOURCE,
+        'source-layer': MAP_SOURCE_LAYER,
         paint: {
-          'fill-color': `rgba(${100}, ${100}, ${100}, 0.4)`,
+          'fill-color': `rgba(${0}, ${0}, ${0}, 1)`,
           'fill-outline-color': `rgba(${randomNum}, ${randomNum}, ${randomNum}, 1)`,
           'fill-opacity': [
             'case',
@@ -48,38 +47,40 @@ function Map() {
 
         },
       });
-
-      map.current.on('mouseenter', 'states-layer', () => {
+      map.current.on('mouseenter', MAP_ID, () => {
         map.current.getCanvas().style.cursor = 'pointer';
       });
 
-      // Change the cursor back to a pointer
-      // when it leaves the states layer.
-      map.current.on('mouseleave', 'states-layer', () => {
+      map.current.on('mouseleave', MAP_ID, () => {
         map.current.getCanvas().style.cursor = '';
       });
 
-      map.current.on('mousemove', 'states-layer', (e) => {
+      map.current.on('mousemove', MAP_ID, (e) => {
         if (e.features.length > 0) {
           if (hoveredStateId !== null) {
             map.current.setFeatureState(
-              { source: 'states', id: hoveredStateId },
+              {
+                source: MAPSOURCE,
+                sourceLayer: MAP_SOURCE_LAYER,
+                id: hoveredStateId,
+              },
               { hover: false },
             );
           }
           hoveredStateId = e.features[0].id;
-          console.log(e.features[0])
+          console.log(e.features[0]);
 
           map.current.setFeatureState(
-            { source: 'states', id: hoveredStateId },
+            {
+              source: MAPSOURCE,
+              sourceLayer: MAP_SOURCE_LAYER,
+              id: hoveredStateId,
+            },
             { hover: true },
           );
         }
       });
-
-      map.current.on('click', 'states-layer', (e) => {
-        console.log(e.features[0].properties.name);
-      });
+      map.current.on('click', MAP_ID, (e) => console.log(e));
     });
   });
 
