@@ -28,6 +28,7 @@ function Map() {
     const MAPSOURCE = 'country-boundaries';
     const MAP_ID = 'undisputed country boundary fill';
     const MAP_ID2 = 'disputed country boundary fill';
+    const MAP_ID3 = 'undisputed country boundary line';
     const MAP_SOURCE_LAYER = 'country_boundaries';
     const MAP_URL = 'mapbox://mapbox.country-boundaries-v1';
 
@@ -55,7 +56,7 @@ function Map() {
             ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${255}, 0.5)`, `rgba(${0}, ${255}, ${0}, 0.5)`],
           'fill-outline-color': [
             'case',
-            ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${0}, 1)`, `rgba(${255}, ${255}, ${255}, 0.5)`],
+            ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${0}, 1)`, `rgba(${0}, ${0}, ${0}, 0.5)`],
           'fill-opacity': [
             'case',
             ['boolean', ['feature-state', 'hover'], false], 1, 0.0],
@@ -86,7 +87,24 @@ function Map() {
         },
       });
 
+      map.current.addLayer({
+        id: MAP_ID3,
+        type: 'line',
+        source: MAPSOURCE,
+        'source-layer': MAP_SOURCE_LAYER,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-width': 1,
+          'line-color': '#FFFFFF',
+        },
+      });
+
       map.current.on('mouseenter', MAP_ID, () => {
+        // fetch('api/hover/:countryID',
+
         map.current.getCanvas().style.cursor = 'pointer';
       });
 
@@ -106,6 +124,7 @@ function Map() {
               { hover: false },
             );
           }
+          fetch(`/api/hover/${e.features[0].properties.name_en}`)
           hoveredStateId = e.features[0].id;
           map.current.setFeatureState(
             {
