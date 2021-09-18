@@ -1,14 +1,14 @@
-// const express = require('express');
+const express = require('express');
 
-// const app = express();
-// const path = require('path');
-
-
-// app.use(express.json());
+const app = express();
+const path = require('path');
 
 
-// // eslint-disable-next-line import/no-dynamic-require
-// const apiRouter = require(path.join(__dirname, 'routes/api.js'));
+app.use(express.json());
+
+
+// eslint-disable-next-line import/no-dynamic-require
+const apiRouter = require(path.join(__dirname, '../routes/api.js'));
 
 // if (process.env.NODE_ENV === 'production') {
 //   app.use('/build', express.static(path.join(__dirname, '../build')));
@@ -22,15 +22,15 @@
 //   res.status(404).sendFile(path.join(__dirname, '../public/client/HTML404Page.html'));
 // });
 
-// app.use((err, req, res, next) => {
-//   const defaultErr = {
-//     log: 'Express error handler caught unknown middleware error',
-//     status: 500,
-//     message: { err: 'An error occurred' },
-//   };
-//   const errorObj = { ...defaultErr, ...err };
-//   console.log(errorObj.log);
-//   return res.status(errorObj.status).json(errorObj.message);
-// });
+app.use((err, req, res, next) => {
+  const defaultErr = {
+    log: 'Express error handler caught unknown middleware error',
+    status: 500,
+    message: { err: 'An error occurred' },
+  };
+  const errorObj = { ...defaultErr, ...err };
+  console.log(errorObj.log);
+  return res.status(errorObj.status).json(errorObj.message);
+});
 
-// app.listen(3000, () => console.log('Listening on 3000'));
+app.listen(3000, () => console.log('Listening on 3000'));
