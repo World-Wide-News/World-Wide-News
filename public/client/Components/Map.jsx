@@ -24,22 +24,60 @@ function Map() {
 
     let hoveredStateId = null;
     const randomNum = Math.random() * 255;
-    const MAPSOURCE = 'country-boundaries-simplified';
-    const MAP_ID = 'countries-simplification-data';
-    const MAP_SOURCE_LAYER = 'countries_polygons';
+
+    const MAPSOURCE = 'country-boundaries';
+    const MAP_ID = 'undisputed country boundary fill';
+    const MAP_ID2 = 'disputed country boundary fill';
+    const MAP_SOURCE_LAYER = 'country_boundaries';
+    const MAP_URL = 'mapbox://mapbox.country-boundaries-v1';
 
     map.current.on('load', () => {
       map.current.addSource(MAPSOURCE, {
         type: 'vector',
-        url: 'mapbox://examples.countries-simplification',
+        url: MAP_URL,
       });
       map.current.addLayer({
         id: MAP_ID,
         type: 'fill',
         source: MAPSOURCE,
         'source-layer': MAP_SOURCE_LAYER,
+        filter: [
+          '==',
+          [
+            'get',
+            'disputed',
+          ],
+          'false',
+        ],
         paint: {
-          'fill-color': `rgba(${0}, ${0}, ${0}, 1)`,
+          'fill-color': [
+            'case',
+            ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${255}, 0.5)`, `rgba(${0}, ${255}, ${0}, 0.5)`],
+          'fill-outline-color': [
+            'case',
+            ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${0}, 1)`, `rgba(${255}, ${255}, ${255}, 0.5)`],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false], 1, 0.0],
+
+        },
+      });
+
+      map.current.addLayer({
+        id: MAP_ID2,
+        type: 'fill',
+        source: MAPSOURCE,
+        'source-layer': MAP_SOURCE_LAYER,
+        filter: [
+          '==',
+          [
+            'get',
+            'disputed',
+          ],
+          'true',
+        ],
+        paint: {
+          'fill-color': `rgba(${0}, ${0}, ${255}, 0.5)`,
           'fill-outline-color': `rgba(${randomNum}, ${randomNum}, ${randomNum}, 1)`,
           'fill-opacity': [
             'case',
@@ -47,6 +85,7 @@ function Map() {
 
         },
       });
+
       map.current.on('mouseenter', MAP_ID, () => {
         map.current.getCanvas().style.cursor = 'pointer';
       });
@@ -68,8 +107,6 @@ function Map() {
             );
           }
           hoveredStateId = e.features[0].id;
-          console.log(e.features[0]);
-
           map.current.setFeatureState(
             {
               source: MAPSOURCE,
@@ -80,7 +117,28 @@ function Map() {
           );
         }
       });
-      map.current.on('click', MAP_ID, (e) => console.log(e));
+      map.current.on('click', MAP_ID, (e) => {
+        const clickedStateId = e.features[0].id;
+        map.current.setFeatureState(
+          {
+            source: MAPSOURCE,
+            sourceLayer: MAP_SOURCE_LAYER,
+            id: clickedStateId,
+          },
+          { clicked: true },
+        );
+        setTimeout(() => {
+          map.current.setFeatureState(
+            {
+              source: MAPSOURCE,
+              sourceLayer: MAP_SOURCE_LAYER,
+              id: clickedStateId,
+            },
+            { clicked: false },
+          );
+        }, 100);
+        console.log(e.features[0]);
+      });
     });
   });
 
