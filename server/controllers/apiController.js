@@ -7,6 +7,31 @@ const path = require('path');
 
 // const cleanDataPath = path.join(__dirname, '../data-organization/dataClean.csv');
 
+const apiController = {};
+
+apiController.getData = async (req, res, next) => {
+    //req.query 
+    const{ name } = req.body; 
+     const population = {
+        method: 'GET',
+        url: 'https://world-population.p.rapidapi.com/population',
+        params: { country_name: req.body },
+        headers: {
+            'x-rapidapi-host': 'world-population.p.rapidapi.com',
+            'x-rapidapi-key': '0a9cc778c4msh8ec778a834e5103p1683bajsn6db8490b850c',
+        }
+    };
+
+axios.request(population)
+.then((res) => {
+  console.log(res.locals);
+  return(res.locals.body.population);
+ç
+}).catch((error) => {
+  console.error(error);
+});
+
+
 // const dataCSVRead = async (filePath) => {
 //   const csvFile = fs.readFileSync(filePath, { encoding: 'UTF-8' });
 //   const dataOut = await $.csv.toObjects(csvFile);

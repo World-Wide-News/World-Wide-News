@@ -9,6 +9,11 @@ const router = express.Router();
 router.get('/getDetails', apiController.getDetails, (req, res) => {
   console.log('we are in the last middleware func');
   return res.status(200).send(res.locals.articles);
+}
+
+
+router.get('/', apiController.getData, (req, res) => {
+  console.log('yes');
 });
 
 // router.get('/map', apiController.createMap, (req, res) => {

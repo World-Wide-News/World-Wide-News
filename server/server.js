@@ -6,20 +6,18 @@ const path = require('path');
 
 app.use(express.json());
 
-
-app.use('/api',apiRouter);
+app.use('/api', apiRouter);
 
 // import in the controller method
-
 
 // // eslint-disable-next-line import/no-dynamic-require
 // const apiRouter = require(path.join(__dirname, 'routes/api.js'));
 
 app.get('/getDetails', detailsController.getDetails, (req, res) => {
-    // console.log(res.locals.articles);
-    console.log('Here in the last method that sends the response');
-    return res.status(200).send(res.locals.articles);
-  });
+  // console.log(res.locals.articles);
+  console.log('Here in the last method that sends the response');
+  return res.status(200).send(res.locals.articles);
+});
 
 if (process.env.NODE_ENV === 'production') {
   app.use('/build', express.static(path.join(__dirname, '../build')));
