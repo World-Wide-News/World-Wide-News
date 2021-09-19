@@ -6,6 +6,8 @@ import Map from './Map.jsx';
 import LogIn from './LogIn.jsx';
 import Welcome from './Welcome.jsx';
 import FavoriteList from './FavoriteList.jsx';
+import NewsFeed from './NewsFeed.jsx'
+
 
 function App() {
   const [currentFavorites, setFavorites] = useState([]);
@@ -121,6 +123,7 @@ function App() {
 
   
       <Map currentFavorites={currentFavorites} setFavorites={setFavorites} />
+      <NewsFeed />
 
 
     </div>
