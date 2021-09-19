@@ -1,11 +1,20 @@
-// const express = require('express');
-// const apiController = require('../controllers/apiController');
+const express = require('express');
+const apiController = require('../controllers/apiController');
 
-// const router = express.Router();
+const router = express.Router();
 
 // // router.get('/', apiController.getData, (req, res) => {
 // //   res.send('yes');
 // // });
+router.get('/getDetails', apiController.getDetails, (req, res) => {
+  console.log('we are in the last middleware func');
+  return res.status(200).send(res.locals.articles);
+}
+
+
+router.get('/', apiController.getData, (req, res) => {
+  console.log('yes');
+});
 
 // router.get('/map', apiController.createMap, (req, res) => {
 //   res.send(res.locals.data).status(200);
