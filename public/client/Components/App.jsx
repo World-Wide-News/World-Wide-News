@@ -15,10 +15,6 @@ function App() {
   const [currentUser, changeUser] = useState(null);
   const [divListening, makeDivListen] = useState(false);
   const [currentCountryClick, setCurrentCountryClick] = useState(null);
-  const [currentCountryHover, setCurrentCountryHover] = useState(null);
-  const [populationDisplayX, setPopulationDisplayX] = useState(null);
-  const [populationDisplayY, setPopulationDisplayY] = useState(null);
-
 
   const deleteFavorite = (e) => {
     console.log(e.target.id);
@@ -118,13 +114,6 @@ function App() {
     }
   };
 
-  const fetchPopulationData = (countryName, e) => {
-    fetch(`/api/population/${countryName}`)
-      .then((data) => data.json())
-      .then((data) => displayPopulationData(data, e))
-      .catch((error) => console.log(error));
-  };
-
   return (
     <div className="wrapper">
 
@@ -134,7 +123,6 @@ function App() {
         currentFavorites={currentFavorites}
         setFavorites={setFavorites}
         setCurrentCountryClick={setCurrentCountryClick}
-        setCurrentCountryHover={setCurrentCountryHover}
       />
       <NewsFeed currentCountryClick={currentCountryClick} />
 

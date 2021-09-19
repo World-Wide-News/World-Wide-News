@@ -10,12 +10,11 @@ const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
 mapboxgl.accessToken = 'pk.eyJ1IjoibGlhbWZvbnRlcyIsImEiOiJja3RsbzdjdmQxeGZxMnBwODJ1aWlpMjgwIn0.tQGIes1AYOO8KIoAJYHTzQ';
 
 function Map(props) {
-  const { setCurrentCountryClick, setCurrentCountryHover } = props;
-  const [currentCountryPopulation, setCountryPopulation] = useState(null);
+  const { setCurrentCountryClick } = props;
 
   let popup;
   let populationData;
-  let previousCountry
+  let previousCountry;
 
   const map = useRef(null);
 
@@ -26,18 +25,6 @@ function Map(props) {
 
     return populationData;
   };
-
-  function throttle(func, wait) {
-    let lastCall = 0;
-    function innerFunc(...args) {
-      const currentTime = Date.now();
-      if (currentTime - lastCall > wait) {
-        lastCall = currentTime;
-        return func(...args);
-      }
-    }
-    return innerFunc;
-  }
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -112,12 +99,12 @@ function Map(props) {
         });
 
         map.current.on('mouseenter', `${MAP_ID}+${i}`, () => {
-          popup.remove()
+          popup.remove();
           map.current.getCanvas().style.cursor = 'pointer';
         });
 
         map.current.on('mouseleave', `${MAP_ID}+${i}`, () => {
-          popup.remove()
+          popup.remove();
           map.current.getCanvas().style.cursor = '';
         });
 
@@ -147,8 +134,7 @@ function Map(props) {
                   <p>Country: ${e.features[0].properties.name_en} </p><p>Population: ${populationData.toLocaleString()} </p>`)
                     // .addClassName('popup')
                     .addTo(map.current);
-                    popup.addClassName('popup')
-
+                  popup.addClassName('popup');
                 });
             } else {
               popup = new mapboxgl.Popup({ closeOnMove: true })
@@ -157,7 +143,7 @@ function Map(props) {
                 <p>Country: ${e.features[0].properties.name_en} </p><p>Population: ${populationData.toLocaleString()} </p>`)
                 // .addClassName('popup')
                 .addTo(map.current);
-                popup.addClassName('popup')
+              popup.addClassName('popup');
             }
             previousCountry = hoveredStateId;
 

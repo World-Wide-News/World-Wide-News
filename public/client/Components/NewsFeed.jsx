@@ -1,6 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
-
+import React, { useState } from 'react';
 
 const Newsfeed = (props) => {
   const { currentCountryClick } = props;
@@ -9,7 +7,7 @@ const Newsfeed = (props) => {
   const [posts, setPosts] = useState([]);
 
   const getPosts = (countryName) => {
-    console.log(countryName)
+    console.log(countryName);
     setLoading(true);
     fetch(`/api/population/${countryName}`)
       .then((data) => console.log(data.json()))
@@ -24,7 +22,7 @@ const Newsfeed = (props) => {
   ));
 
   return (
-    <div>
+    <div id = 'NewsFeed'>
       {/* {renderedPosts} */}
       {loading ? (
         <p>Loading...</p>

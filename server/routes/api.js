@@ -5,10 +5,7 @@ const router = express.Router();
 
 router.get('/population/:countryName', apiController.getData, (req, res) => res.status(200).json(res.locals.population));
 
-router.get('/getDetails', apiController.getDetails, (req, res) => {
-  console.log('we are in the last middleware func');
-  return res.status(200).send(res.locals.articles);
-});
+router.get('/getArticles/:countryName', apiController.getDetails, (req, res) => res.status(200).send(res.locals.articles));
 
 // router.get('/map', apiController.createMap, (req, res) => {
 //   res.send(res.locals.data).status(200);
