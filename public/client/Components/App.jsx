@@ -6,8 +6,7 @@ import Map from './Map.jsx';
 import LogIn from './LogIn.jsx';
 import Welcome from './Welcome.jsx';
 import FavoriteList from './FavoriteList.jsx';
-import NewsFeed from './NewsFeed.jsx'
-
+import NewsFeed from './NewsFeed.jsx';
 
 function App() {
   const [currentFavorites, setFavorites] = useState([]);
@@ -15,6 +14,11 @@ function App() {
   const [loginAttempt, changeAttempt] = useState(null);
   const [currentUser, changeUser] = useState(null);
   const [divListening, makeDivListen] = useState(false);
+  const [currentCountryClick, setCurrentCountryClick] = useState(null);
+  const [currentCountryHover, setCurrentCountryHover] = useState(null);
+  const [populationDisplayX, setPopulationDisplayX] = useState(null);
+  const [populationDisplayY, setPopulationDisplayY] = useState(null);
+
 
   const deleteFavorite = (e) => {
     console.log(e.target.id);
@@ -40,7 +44,7 @@ function App() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (!Array.isArray(data)) throw Error('wrong')
+          if (!Array.isArray(data)) throw Error('wrong');
           // console.log(Array.isArray(data))
           if (Array.isArray(data)) {
             setFavorites(data);
@@ -50,10 +54,6 @@ function App() {
           }
         })
         .catch((err) => changeAttempt('Incorrect username or password!'));
-
-      //   }
-
-      // });
     }
   };
 
@@ -118,13 +118,25 @@ function App() {
     }
   };
 
+  const fetchPopulationData = (countryName, e) => {
+    fetch(`/api/population/${countryName}`)
+      .then((data) => data.json())
+      .then((data) => displayPopulationData(data, e))
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div className="wrapper">
 
-  
-      <Map currentFavorites={currentFavorites} setFavorites={setFavorites} />
-      <NewsFeed />
+      {/* {currentCountryHover && } */}
 
+      <Map
+        currentFavorites={currentFavorites}
+        setFavorites={setFavorites}
+        setCurrentCountryClick={setCurrentCountryClick}
+        setCurrentCountryHover={setCurrentCountryHover}
+      />
+      <NewsFeed currentCountryClick={currentCountryClick} />
 
     </div>
   );

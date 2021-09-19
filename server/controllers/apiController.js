@@ -4,26 +4,25 @@ const path = require('path');
 // const bcrypt = require('bcryptjs');
 // const models = require('../models/mtaModels');
 
-
 const apiController = {};
 
-apiController.getData = async (req, res, next) => {
-  // req.query
-  const { name } = req.body;
-  const population = {
+apiController.getData = (req, res, next) => {
+  const { countryName } = req.params;
+  const populationRequest = {
     method: 'GET',
     url: 'https://world-population.p.rapidapi.com/population',
-    params: { country_name: req.body },
+    params: { country_name: countryName },
     headers: {
       'x-rapidapi-host': 'world-population.p.rapidapi.com',
       'x-rapidapi-key': '0a9cc778c4msh8ec778a834e5103p1683bajsn6db8490b850c',
     },
   };
 
-  axios.request(population)
-    .then((res) => {
-      console.log(res.locals);
-      return (res.locals.body.population);
+  axios.request(populationRequest)
+    .then((response) => {
+      const { population } = response.data.body;
+      res.locals.population = population;
+      next();
     }).catch((error) => {
       const defaultErr = {
         log: 'Error handler caught an error inside getData',

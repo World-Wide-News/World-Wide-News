@@ -3,9 +3,7 @@ const apiController = require('../controllers/apiController');
 
 const router = express.Router();
 
-router.get('/', apiController.getData, (req, res) => {
-  console.log('yes');
-});
+router.get('/population/:countryName', apiController.getData, (req, res) => res.status(200).json(res.locals.population));
 
 router.get('/getDetails', apiController.getDetails, (req, res) => {
   console.log('we are in the last middleware func');

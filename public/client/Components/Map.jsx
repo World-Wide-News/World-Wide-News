@@ -1,4 +1,6 @@
 // import mapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
+import { Popup } from 'mapbox-gl';
+import mapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
 import React, { useRef, useEffect, useState } from 'react';
 
 // const geoJson = FileReader.readAsDataText('/root/World-Wide-News/public/client/Components/countries.geojson');
@@ -7,19 +9,43 @@ const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGlhbWZvbnRlcyIsImEiOiJja3RsbzdjdmQxeGZxMnBwODJ1aWlpMjgwIn0.tQGIes1AYOO8KIoAJYHTzQ';
 
-function Map() {
+function Map(props) {
+  const { setCurrentCountryClick, setCurrentCountryHover } = props;
+  const [currentCountryPopulation, setCountryPopulation] = useState(null);
+
+  let popup;
+  let populationData;
+  let previousCountry
+
   const map = useRef(null);
-  const [lng, setLng] = useState(-73.977137);
-  const [lat, setLat] = useState(40.764626);
-  const [zoom, setZoom] = useState(1);
+
+  const fetchPopulationData = async (countryName) => {
+    const res = await fetch(`/api/population/${countryName}`);
+
+    const populationData = await res.json();
+
+    return populationData;
+  };
+
+  function throttle(func, wait) {
+    let lastCall = 0;
+    function innerFunc(...args) {
+      const currentTime = Date.now();
+      if (currentTime - lastCall > wait) {
+        lastCall = currentTime;
+        return func(...args);
+      }
+    }
+    return innerFunc;
+  }
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
       container: 'mapContainer',
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [lng, lat],
-      zoom,
+      center: [-73.977137, 40.764626],
+      zoom: 1,
     });
 
     let hoveredStateId = null;
@@ -74,7 +100,7 @@ function Map() {
             'fill-color': [
               'case',
               ['boolean', ['feature-state', 'clicked'], false], colorArrFillHoverTrue[i - 1],
-              colorArrFillHoverFalse[i-1]],
+              colorArrFillHoverFalse[i - 1]],
             'fill-outline-color': [
               'case',
               ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${0}, 1)`, `rgba(${255}, ${255}, ${255}, 0.5)`],
@@ -86,14 +112,18 @@ function Map() {
         });
 
         map.current.on('mouseenter', `${MAP_ID}+${i}`, () => {
+          popup.remove()
           map.current.getCanvas().style.cursor = 'pointer';
         });
 
         map.current.on('mouseleave', `${MAP_ID}+${i}`, () => {
+          popup.remove()
           map.current.getCanvas().style.cursor = '';
         });
 
+        // eslint-disable-next-line no-loop-func
         map.current.on('mousemove', `${MAP_ID}+${i}`, (e) => {
+          if (popup) popup.remove();
           if (e.features.length > 0) {
             if (hoveredStateId !== null) {
               map.current.setFeatureState(
@@ -106,6 +136,31 @@ function Map() {
               );
             }
             hoveredStateId = e.features[0].id;
+
+            if (previousCountry !== hoveredStateId) {
+              fetchPopulationData(e.features[0].properties.name_en)
+                .then((data) => {
+                  populationData = data;
+                  popup = new mapboxgl.Popup({ closeOnMove: true })
+                    .setLngLat([e.lngLat.lng, e.lngLat.lat])
+                    .setHTML(`
+                  <p>Country: ${e.features[0].properties.name_en} </p><p>Population: ${populationData.toLocaleString()} </p>`)
+                    // .addClassName('popup')
+                    .addTo(map.current);
+                    popup.addClassName('popup')
+
+                });
+            } else {
+              popup = new mapboxgl.Popup({ closeOnMove: true })
+                .setLngLat([e.lngLat.lng, e.lngLat.lat])
+                .setHTML(`
+                <p>Country: ${e.features[0].properties.name_en} </p><p>Population: ${populationData.toLocaleString()} </p>`)
+                // .addClassName('popup')
+                .addTo(map.current);
+                popup.addClassName('popup')
+            }
+            previousCountry = hoveredStateId;
+
             map.current.setFeatureState(
               {
                 source: MAPSOURCE,
@@ -119,6 +174,7 @@ function Map() {
 
         map.current.on('click', `${MAP_ID}+${i}`, (e) => {
           const clickedStateId = e.features[0].id;
+          setCurrentCountryClick(e.features[0].properties.name_en);
           map.current.setFeatureState(
             {
               source: MAPSOURCE,
@@ -137,7 +193,6 @@ function Map() {
               { clicked: false },
             );
           }, 100);
-          console.log(e.features[0]);
         });
       }
       map.current.addLayer({

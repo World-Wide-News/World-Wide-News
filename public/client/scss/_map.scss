@@ -40,10 +40,17 @@ body {
 
   #mapContainer {
     border: solid black;
-    width: 25rem;
-    height: 15rem;
+    width: 35rem;
+    height: 25rem;
     margin: auto;
     font-size: 0.25rem;
+
+    .popup {
+      display: flex;
+      font-size: 0.4rem;
+      border-radius: 5% 5% 5% 5%;
+      line-height: 1rem;
+    }
   }
 
   .mapboxgl-ctrl-attrib-button {
