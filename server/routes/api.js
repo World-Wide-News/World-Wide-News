@@ -22,14 +22,14 @@ router.post('/login',
   });
 
 // route and middlewares to execute when user adds favourite links
-router.post('/addFav/?:title',
+router.post('/addFav',
   apiController.addFav,
   (req, res) => {
     res.status(200).json(res.locals.user);
   });
 
 // route and middlewares to execute when user wants to delete a favourite link
-router.delete('/deleteFav/?:title', apiController.deleteFav, (req, res) => {
+router.delete('/deleteFav', apiController.deleteFav, (req, res) => {
   res.status(200).json(res.locals.user);
 });
 

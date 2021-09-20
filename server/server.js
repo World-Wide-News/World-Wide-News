@@ -2,6 +2,8 @@ const express = require('express');
 
 const app = express();
 const path = require('path');
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // eslint-disable-next-line import/no-dynamic-require
 const apiRouter = require(path.join(__dirname, 'routes/api.js'));
@@ -12,7 +14,6 @@ if (process.env.NODE_ENV === 'production') {
 
   app.get('/', (req, res) => res.status(200).sendFile(path.join(__dirname, '../public/index.html')));
 }
-
 app.use('/api', apiRouter);
 
 app.use('/*', (req, res) => {

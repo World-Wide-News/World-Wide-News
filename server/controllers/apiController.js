@@ -2,7 +2,7 @@ const axios = require('axios');
 const express = require('express');
 const path = require('path');
 // const fs = require('fs');
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const models = require('../models/mtaModels');
 
 const apiController = {};
@@ -94,12 +94,15 @@ apiController.createUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
+    console.log(username, password);
+
     const newUser = {
       username,
       password,
     };
 
     const user = await models.Users.findOne({ username });
+
     if (user) return res.send('User already created').status(304);
 
     await models.Users.create(newUser);
@@ -122,13 +125,16 @@ apiController.createUser = async (req, res, next) => {
 apiController.verifyUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    // console.log(username, password);
+    
 
+    
     const user = await models.Users.findOne({ username });
+    
 
     const hashedPW = user.password;
 
     const compare = bcrypt.compareSync(password, hashedPW);
+    console.log('test')
 
     if (!compare) throw Error('Incorrect username or password. Please try again.');
 
@@ -150,7 +156,7 @@ apiController.getUserData = async (req, res, next) => {
     const user = await models.Users.findOne({ username: res.locals.user });
 
     // changed elem => elem.name to elem=>elem.link
-    const favoriteArticles = user.favorites.map((elem) => elem.link);
+    const favoriteArticles = user.favorites.map((elem) => elem);
 
     res.locals.data = favoriteArticles;
     next();
@@ -179,6 +185,8 @@ apiController.addFav = async (req, res, next) => {
 
     await models.Users.findOneAndUpdate(query, { $push: update });
 
+    console.log(`${currentUser} added title: ${title}, link: ${link}`)
+
     next();
   } catch (err) {
     next({
@@ -203,6 +211,8 @@ apiController.deleteFav = async (req, res, next) => {
     };
 
     await models.Users.findOneAndUpdate(query, { $pull: update });
+
+    console.log(`${currentUser} deleted title: ${title}, link: ${link}`)
 
     next();
   } catch (err) {
