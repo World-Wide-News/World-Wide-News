@@ -1,8 +1,9 @@
 const axios = require('axios');
+const express = require('express');
 const path = require('path');
 // const fs = require('fs');
 // const bcrypt = require('bcryptjs');
-// const models = require('../models/mtaModels');
+const models = require('../models/mtaModels');
 
 const apiController = {};
 
@@ -34,7 +35,7 @@ apiController.getPopulationData = (req, res, next) => {
 };
 
 apiController.getArticles = async (req, res, next) => {
-  const {countryName} = req.params;
+  const { countryName } = req.params;
   // add the request details for the fetch request that will get the news data
   const requestDetails = {
     method: 'GET',
@@ -43,7 +44,7 @@ apiController.getArticles = async (req, res, next) => {
       q: countryName, lang: 'en', page: '1', page_size: '5',
     },
     headers: {
-      'x-rapidapi-key': 
+      'x-rapidapi-key':
       '0a9cc778c4msh8ec778a834e5103p1683bajsn6db8490b850c',
       // 'c9dd5fae0bmshb0c6910ac9ff173p1739a1jsn7a43e27d0bc4',
       'x-rapidapi-host': 'free-news.p.rapidapi.com',
@@ -54,7 +55,7 @@ apiController.getArticles = async (req, res, next) => {
     .then((response) => {
       //   console.log(response.data.articles);
       //   res.locals.articles = response.body;
-      const arrOut = []
+      const arrOut = [];
       // iterate through the articles recieved and save the required fields in a new object
       for (let i = 0; i < response.data.articles.length; i += 1) {
         const currentItem = response.data.articles[i];
@@ -85,6 +86,132 @@ apiController.getArticles = async (req, res, next) => {
   // using axios, fetch the response and save the required details like Title, Summary, url link
   // call next() and send it to the next middleware
   // send it back to front end as required by the FE
+};
+
+// controller function to create a user in the worldwidenews mongoDB if it does not exist
+
+apiController.createUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+
+    const newUser = {
+      username,
+      password,
+    };
+
+    const user = await models.Users.findOne({ username });
+    if (user) return res.send('User already created').status(304);
+
+    await models.Users.create(newUser);
+
+    console.log(`User: ${username} signed up`);
+
+    res.locals.user = username;
+    return next();
+  } catch (err) {
+    console.log(err);
+    return next({
+      log: 'Express error handler caught in apiController.createUser middleware',
+      status: 500,
+      message: { err },
+    });
+  }
+};
+
+// function to verify user when the user tries to login
+apiController.verifyUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    // console.log(username, password);
+
+    const user = await models.Users.findOne({ username });
+
+    const hashedPW = user.password;
+
+    const compare = bcrypt.compareSync(password, hashedPW);
+
+    if (!compare) throw Error('Incorrect username or password. Please try again.');
+
+    console.log(`User: ${username} logged in`);
+    res.locals.user = username;
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.verifyUser middleware',
+      status: 500,
+      message: { err },
+    });
+  }
+};
+
+// code to get the favourite article links of the user
+apiController.getUserData = async (req, res, next) => {
+  try {
+    const user = await models.Users.findOne({ username: res.locals.user });
+
+    // changed elem => elem.name to elem=>elem.link
+    const favoriteArticles = user.favorites.map((elem) => elem.link);
+
+    res.locals.data = favoriteArticles;
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.getUserData middleware',
+      status: 500,
+      message: { err },
+    });
+  }
+};
+
+// function to add an article link as a favourite
+
+apiController.addFav = async (req, res, next) => {
+  try {
+    const { currentUser, link } = req.body;
+
+    const query = {
+      username: currentUser,
+    };
+
+    const update = {
+      favorites: { articleLink: link },
+    };
+
+    await models.Users.findOneAndUpdate(query, { $push: update });
+
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.addFav middleware',
+      status: 500,
+      message: `Express error handler caught in apiController.addFav middleware ${err}`,
+    });
+  }
+};
+
+// add a function to delete an article from the favourite tag
+apiController.deleteFav = async (req, res, next) => {
+  try {
+    const { currentUser, link } = req.body;
+
+    const query = {
+      username: currentUser,
+    };
+
+    const update = {
+      favorites: { articleLink: link },
+    };
+
+    await models.Users.findOneAndUpdate(query, { $pull: update });
+
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.deleteFav middleware',
+      status: 500,
+      message: `Express error handler caught in apiController.deleteFav middleware ${err}`,
+    });
+}
 };
 
 // apiController.createUser = async (req, res, next) => {
