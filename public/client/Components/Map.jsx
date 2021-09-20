@@ -1,13 +1,8 @@
 // import mapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
-import { Popup } from 'mapbox-gl';
 import mapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
 import React, { useRef, useEffect, useState } from 'react';
 
-// const geoJson = FileReader.readAsDataText('/root/World-Wide-News/public/client/Components/countries.geojson');
-
-const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
-
-mapboxgl.accessToken = 'pk.eyJ1IjoibGlhbWZvbnRlcyIsImEiOiJja3RsbzdjdmQxeGZxMnBwODJ1aWlpMjgwIn0.tQGIes1AYOO8KIoAJYHTzQ';
+mapboxGl.accessToken = 'pk.eyJ1IjoibGlhbWZvbnRlcyIsImEiOiJja3RsbzdjdmQxeGZxMnBwODJ1aWlpMjgwIn0.tQGIes1AYOO8KIoAJYHTzQ';
 
 function Map(props) {
   const { setCurrentCountryClick } = props;
@@ -19,16 +14,18 @@ function Map(props) {
   const map = useRef(null);
 
   const fetchPopulationData = async (countryName) => {
-    const res = await fetch(`/api/population/${countryName}`);
-
-    const populationData = await res.json();
-
-    return populationData;
+    try {
+      const res = await fetch(`/api/population/${countryName}`);
+      const popData = await res.json();
+      return popData;
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
-    map.current = new mapboxgl.Map({
+    map.current = new mapboxGl.Map({
       container: 'mapContainer',
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [-73.977137, 40.764626],
@@ -99,7 +96,6 @@ function Map(props) {
         });
 
         map.current.on('mouseenter', `${MAP_ID}+${i}`, () => {
-          popup.remove();
           map.current.getCanvas().style.cursor = 'pointer';
         });
 
@@ -128,16 +124,17 @@ function Map(props) {
               fetchPopulationData(e.features[0].properties.name_en)
                 .then((data) => {
                   populationData = data;
-                  popup = new mapboxgl.Popup({ closeOnMove: true })
+                  popup = new mapboxGl.Popup({ closeOnMove: true })
                     .setLngLat([e.lngLat.lng, e.lngLat.lat])
                     .setHTML(`
                   <p>Country: ${e.features[0].properties.name_en} </p><p>Population: ${populationData.toLocaleString()} </p>`)
                     // .addClassName('popup')
                     .addTo(map.current);
                   popup.addClassName('popup');
-                });
+                })
+                .catch((err) => console.log(err));
             } else {
-              popup = new mapboxgl.Popup({ closeOnMove: true })
+              popup = new mapboxGl.Popup({ closeOnMove: true })
                 .setLngLat([e.lngLat.lng, e.lngLat.lat])
                 .setHTML(`
                 <p>Country: ${e.features[0].properties.name_en} </p><p>Population: ${populationData.toLocaleString()} </p>`)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Newsfeed = (props) => {
   const { currentCountryClick } = props;
@@ -6,29 +6,30 @@ const Newsfeed = (props) => {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
 
-  const getPosts = (countryName) => {
-    console.log(countryName);
-    setLoading(true);
-    fetch(`/api/population/${countryName}`)
-      .then((data) => console.log(data.json()))
-      .then((data) => setPosts(data))
-      .then(() => setLoading(false));
+  const getPosts = async (countryName) => {
+    try {
+      const fetchedPosts = await fetch(`/api/getArticles/${currentCountryClick}`);
+      setPosts(fetchedPosts)
+      console.log(fetchedPosts.json());
+      console.log(fetchedPosts)
+    } catch (err) {
+      console.log(err);
+    }
+    // fetch(`/api/population/${currentCountryClick}`)
+    //   .then((data) => console.log(data.json()))
+    //   .then((data) => setPosts(data));
   };
 
-  const renderedPosts = posts.map((post, index) => (
-    <div key={index}>
-      <h1>{post.title}</h1>
-    </div>
-  ));
+  let renderedPosts;
+
+  useEffect(() => {
+    console.log('test')
+    if (currentCountryClick) getPosts(currentCountryClick);
+  });
 
   return (
-    <div id = 'NewsFeed'>
-      {/* {renderedPosts} */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <button onClick={() => getPosts(currentCountryClick)}>Load Posts</button>
-      )}
+    <div>
+      {(currentCountryClick)}
     </div>
   );
 };

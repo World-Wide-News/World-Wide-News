@@ -33,7 +33,7 @@ apiController.getData = (req, res, next) => {
     });
 };
 
-apiController.getDetails = async (req, res, next) => {
+apiController.getArticles = async (req, res, next) => {
   const countryName = 'australia';
   // add the request details for the fetch request that will get the news data
   const requestDetails = {
@@ -69,9 +69,9 @@ apiController.getDetails = async (req, res, next) => {
       return next();
     }).catch((err) => {
       const defaultErr = {
-        log: 'Error handler caught an error inside getProducts',
+        log: 'Error handler caught an error inside getArticles',
         status: 500,
-        message: { err: `An error occurred inside a middleware named getProducts : ${err}` },
+        message: { err: `An error occurred inside a middleware named getArticles : ${err}` },
       };
       next(defaultErr);
     });
