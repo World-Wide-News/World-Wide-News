@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MONGO_URI = 'mongodb+srv://dbUser:codesmith@cluster0.rnhbs.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://dbUser:codesmith@cluster0.rnhbs.mongodb.net/worldwidenews?retryWrites=true&w=majority';
 
 const SALT_WORK_FACTOR = 10;
 const bcrypt = require('bcryptjs');
@@ -19,7 +19,7 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
-  favorites: [{ articleLink: String }],
+  favorites: [{ title: String, link: String }],
 });
 
 // the below method runs right before the document is saved on the db.

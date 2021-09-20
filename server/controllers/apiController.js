@@ -167,14 +167,14 @@ apiController.getUserData = async (req, res, next) => {
 
 apiController.addFav = async (req, res, next) => {
   try {
-    const { currentUser, link } = req.body;
+    const { currentUser, title, link } = req.body;
 
     const query = {
       username: currentUser,
     };
 
     const update = {
-      favorites: { articleLink: link },
+      favorites: { title, link },
     };
 
     await models.Users.findOneAndUpdate(query, { $push: update });
@@ -192,14 +192,14 @@ apiController.addFav = async (req, res, next) => {
 // add a function to delete an article from the favourite tag
 apiController.deleteFav = async (req, res, next) => {
   try {
-    const { currentUser, link } = req.body;
+    const { currentUser, title, link } = req.body;
 
     const query = {
       username: currentUser,
     };
 
     const update = {
-      favorites: { articleLink: link },
+      favorites: { title, link },
     };
 
     await models.Users.findOneAndUpdate(query, { $pull: update });
@@ -211,7 +211,7 @@ apiController.deleteFav = async (req, res, next) => {
       status: 500,
       message: `Express error handler caught in apiController.deleteFav middleware ${err}`,
     });
-}
+  }
 };
 
 // apiController.createUser = async (req, res, next) => {

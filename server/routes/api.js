@@ -25,12 +25,12 @@ router.post('/login',
 router.post('/addFav/?:title',
   apiController.addFav,
   (req, res) => {
-    res.status(200).send(res.locals.user);
+    res.status(200).json(res.locals.user);
   });
 
 // route and middlewares to execute when user wants to delete a favourite link
 router.delete('/deleteFav/?:title', apiController.deleteFav, (req, res) => {
-  res.status(200).send(res.locals.user);
+  res.status(200).json(res.locals.user);
 });
 
 // router.get('/map', apiController.createMap, (req, res) => {
