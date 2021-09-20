@@ -5,14 +5,9 @@ import { faStar as faStarEmpty } from '@fortawesome/free-regular-svg-icons';
 
 const Post = (props) => {
   const {
-    title, summary, link, currentFavorites, setFavorites, addFavorite, deleteFavorite,
+    title, summary, link, currentFavorites, addFavorite, deleteFavorite,
   } = props;
 
-  // const addFavorite = (title, link) => {
-  //   const titleNoSpace = title.replace(/[' ']/g, '');
-  //   const favoriteUpdate = Object.assign(currentFavorites, { [titleNoSpace]: link });
-  //   setFavorites(favoriteUpdate);
-  // };
   let favorited = false;
   const titleNoSpace = title.replace(/[' ']/g, '');
 

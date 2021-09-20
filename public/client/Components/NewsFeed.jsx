@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Post from './Post.jsx';
 
 const Newsfeed = (props) => {

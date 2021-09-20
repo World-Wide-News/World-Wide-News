@@ -13,7 +13,6 @@ function App() {
   const [loginStatus, changeLoginStatus] = useState(false);
   const [loginAttempt, changeAttempt] = useState(null);
   const [currentUser, changeUser] = useState(null);
-  const [divListening, makeDivListen] = useState(false);
   const [currentCountryClick, setCurrentCountryClick] = useState(null);
   const [posts, setPosts] = useState([]);
 
@@ -42,7 +41,6 @@ function App() {
             setFavorites(data);
             changeUser(username.value);
             changeLoginStatus(true);
-            makeDivListen(false);
           }
         })
         .catch((err) => changeAttempt('Incorrect username or password!'));
@@ -106,6 +104,9 @@ function App() {
   return (
     <div className="wrapper">
 
+      {!loginStatus
+        ? <LogIn loginButton={loginButton} signUp={signUp} loginAttempt={loginAttempt} />
+        : <Welcome currentUser={currentUser} />}
       <Map
         setCurrentCountryClick={setCurrentCountryClick}
         setPosts={setPosts}
@@ -120,9 +121,10 @@ function App() {
         deleteFavorite={deleteFavorite}
       />
 
-      {(currentFavorites) ? <FavoriteList />
-      : 'Your favorites will be stored here!'}
-
+      <FavoriteList
+        currentFavorites={currentFavorites}
+        deleteFavorite={deleteFavorite}
+      />
     </div>
   );
 }
