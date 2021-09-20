@@ -7,6 +7,7 @@ import LogIn from './LogIn.jsx';
 import Welcome from './Welcome.jsx';
 import FavoriteList from './FavoriteList.jsx';
 import NewsFeed from './NewsFeed.jsx';
+import Button from './Button.jsx';
 
 function App() {
   const [currentFavorites, setFavorites] = useState({});
@@ -38,7 +39,12 @@ function App() {
         .then((data) => {
           if (!Array.isArray(data)) throw Error('wrong');
           if (Array.isArray(data)) {
-            setFavorites(data);
+            setFavorites({});
+            const favoritesObj = {};
+            data.forEach((elem) => {
+              favoritesObj[elem.title] = elem.link;
+            });
+            setFavorites(favoritesObj);
             changeUser(username.value);
             changeLoginStatus(true);
           }
@@ -88,17 +94,38 @@ function App() {
   };
 
   const addFavorite = (title, link) => {
-    const titleNoSpace = title.replace(/[' ']/g, '');
     const currentFavoritesCopy = { ...currentFavorites };
-    const favoriteUpdate = Object.assign(currentFavoritesCopy, { [titleNoSpace]: link });
+    const favoriteUpdate = Object.assign(currentFavoritesCopy, { [title]: link });
     setFavorites(favoriteUpdate);
+    fetch('/api/addFav', {
+      method: 'POST',
+      body: JSON.stringify({ currentUser, title, link }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   };
 
-  const deleteFavorite = (title) => {
-    const titleNoSpace = title.replace(/[' ']/g, '');
+  const deleteFavorite = (title, link) => {
     const currentFavoritesCopy = { ...currentFavorites };
-    delete currentFavoritesCopy[titleNoSpace];
+    delete currentFavoritesCopy[title];
     setFavorites(currentFavoritesCopy);
+    fetch('/api/deleteFav', {
+      method: 'DELETE',
+      body: JSON.stringify({ currentUser, title, link }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  const signOut = () => {
+    changeLoginStatus(false);
+    changeAttempt(null)
+    setFavorites({});
+    changeUser(null);
+    setCurrentCountryClick(null);
+    setPosts([]);
   };
 
   return (
@@ -106,7 +133,9 @@ function App() {
 
       {!loginStatus
         ? <LogIn loginButton={loginButton} signUp={signUp} loginAttempt={loginAttempt} />
-        : <Welcome currentUser={currentUser} />}
+        : [<Welcome currentUser={currentUser} />, 
+        <Button onClick = {signOut}/>
+        ]}
       <Map
         setCurrentCountryClick={setCurrentCountryClick}
         setPosts={setPosts}

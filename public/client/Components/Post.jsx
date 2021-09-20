@@ -9,10 +9,9 @@ const Post = (props) => {
   } = props;
 
   let favorited = false;
-  const titleNoSpace = title.replace(/[' ']/g, '');
 
-  if (currentFavorites[titleNoSpace] === link) favorited = true;
-  
+  if (currentFavorites[title] === link) favorited = true;
+
   const starEmpty = <span id="emptyStar" onClick={() => addFavorite(title, link)}><FontAwesomeIcon icon={faStarEmpty} /></span>;
   const starFull = <span id="fullStar" onClick={() => deleteFavorite(title)}><FontAwesomeIcon icon={faStarFilled} /></span>;
 

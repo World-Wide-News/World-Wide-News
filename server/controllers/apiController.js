@@ -28,7 +28,7 @@ apiController.getPopulationData = (req, res, next) => {
       const defaultErr = {
         log: 'Error handler caught an error inside getData',
         status: 500,
-        message: { err: `An error occurred inside a middleware named getData : ${error}` },
+        message: { err: `An error occurred inside a middleware named getPopulationData : ${error}` },
       };
       next(defaultErr);
     });
@@ -94,8 +94,6 @@ apiController.createUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    console.log(username, password);
-
     const newUser = {
       username,
       password,
@@ -125,16 +123,12 @@ apiController.createUser = async (req, res, next) => {
 apiController.verifyUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    
 
-    
     const user = await models.Users.findOne({ username });
-    
 
     const hashedPW = user.password;
 
     const compare = bcrypt.compareSync(password, hashedPW);
-    console.log('test')
 
     if (!compare) throw Error('Incorrect username or password. Please try again.');
 
@@ -185,7 +179,7 @@ apiController.addFav = async (req, res, next) => {
 
     await models.Users.findOneAndUpdate(query, { $push: update });
 
-    console.log(`${currentUser} added title: ${title}, link: ${link}`)
+    console.log(`${currentUser} added title: ${title}, link: ${link}`);
 
     next();
   } catch (err) {
@@ -212,7 +206,7 @@ apiController.deleteFav = async (req, res, next) => {
 
     await models.Users.findOneAndUpdate(query, { $pull: update });
 
-    console.log(`${currentUser} deleted title: ${title}, link: ${link}`)
+    console.log(`${currentUser} deleted title: ${title}, link: ${link}`);
 
     next();
   } catch (err) {
@@ -223,99 +217,5 @@ apiController.deleteFav = async (req, res, next) => {
     });
   }
 };
-
-// apiController.createUser = async (req, res, next) => {
-//   try {
-//     const { username, password } = req.body;
-
-//     const newUser = {
-//       username,
-//       password,
-//     };
-
-//     const user = await models.Users.findOne({ username });
-//     if (user) return res.send('User already created').status(304);
-
-//     await models.Users.create(newUser);
-
-//     console.log(`User: ${username} signed up`);
-
-//     res.locals.user = username;
-//     return next();
-//   } catch (err) {
-//     console.log(err);
-//     return next({
-//       log: 'Express error handler caught in apiController.createUser middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
-
-// apiController.verifyUser = async (req, res, next) => {
-//   try {
-//     const { username, password } = req.body;
-//     // console.log(username, password);
-
-//     const user = await models.Users.findOne({ username });
-
-//     const hashedPW = user.password;
-
-//     const compare = bcrypt.compareSync(password, hashedPW);
-
-//     if (!compare) throw Error('Incorrect username or password. Please try again.');
-
-//     console.log(`User: ${username} logged in`);
-//     res.locals.user = username;
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.verifyUser middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
-
-// apiController.getUserData = async (req, res, next) => {
-//   try {
-//     const user = await models.Users.findOne({ username: res.locals.user });
-
-//     const favoriteSubways = user.favorites.map((elem) => elem.name);
-
-//     res.locals.data = favoriteSubways;
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.getUserData middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
-
-// apiController.addFav = async (req, res, next) => {
-//   try {
-//     const { currentUser, subwayStation } = req.body;
-
-//     const query = {
-//       username: currentUser,
-//     };
-
-//     const update = {
-//       favorites: { name: subwayStation },
-//     };
-
-//     await models.Users.findOneAndUpdate(query, { $push: update });
-
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.addFav middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
 
 module.exports = apiController;

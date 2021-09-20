@@ -5,7 +5,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 const FavoritedPost = (props) => {
   const { title, link, deleteFavorite } = props;
 
-  const faTimesX = <span id="fullStar" onClick={() => deleteFavorite(title)}><FontAwesomeIcon icon={faTimes} /></span>;
+  const faTimesX = <span id="fullStar" onClick={() => deleteFavorite(title, link)}><FontAwesomeIcon icon={faTimes} /></span>;
 
   return (
     <section name="Post" id="individualPostWrapper">
