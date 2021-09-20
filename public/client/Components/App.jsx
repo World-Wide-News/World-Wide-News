@@ -15,6 +15,7 @@ function App() {
   const [currentUser, changeUser] = useState(null);
   const [divListening, makeDivListen] = useState(false);
   const [currentCountryClick, setCurrentCountryClick] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   const deleteFavorite = (e) => {
     console.log(e.target.id);
@@ -53,36 +54,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (!divListening && loginStatus) {
-      const config = { attributes: true, childList: true, subtree: true };
-      const secretDiv = document.querySelector('#secret');
-      secretDiv.innerHTML = '';
-
-      const callback = function (mutationsList, observer) {
-        if (mutationsList[0].addedNodes[0] !== undefined) {
-          const subwayStation = mutationsList[0].addedNodes[0].data;
-          setFavorites((currentFavorites) => [...currentFavorites, subwayStation]);
-          const user = {
-            currentUser,
-            subwayStation,
-          };
-          fetch(`/api/addFav/${subwayStation}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(user),
-          });
-
-          secretDiv.innerHTML = '';
-        }
-      };
-      const observer = new MutationObserver(callback);
-
-      observer.observe(secretDiv, config);
-    }
-    if (loginStatus) makeDivListen(true);
-  });
-
   const signUp = (e) => {
     const username = document.querySelector('#username');
     const password = document.querySelector('#password');
@@ -114,17 +85,31 @@ function App() {
     }
   };
 
+  const getPosts = (countryName) => {
+    setTimeout(async () => {
+      const postFetchData = await fetch(`/api/getArticles/${countryName}`);
+      const postsArr = await postFetchData.json();
+      setPosts(postsArr);
+    },
+    1000);
+  };
+
   return (
     <div className="wrapper">
 
       {/* {currentCountryHover && } */}
 
       <Map
-        currentFavorites={currentFavorites}
-        setFavorites={setFavorites}
+        // currentFavorites={currentFavorites}
+        // setFavorites={setFavorites}
         setCurrentCountryClick={setCurrentCountryClick}
+        setPosts={setPosts}
+        getPosts={getPosts}
       />
-      <NewsFeed currentCountryClick={currentCountryClick} />
+      <NewsFeed
+        currentCountryClick={currentCountryClick}
+        posts={posts}
+      />
 
     </div>
   );

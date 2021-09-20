@@ -1,36 +1,31 @@
 import React, { useEffect, useState } from 'react';
+import Post from './Post.jsx';
 
 const Newsfeed = (props) => {
-  const { currentCountryClick } = props;
+  const { currentCountryClick, posts } = props;
 
-  const [loading, setLoading] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const displayedPosts = [];
 
-  const getPosts = async (countryName) => {
-    try {
-      const fetchedPosts = await fetch(`/api/getArticles/${currentCountryClick}`);
-      setPosts(fetchedPosts)
-      console.log(fetchedPosts.json());
-      console.log(fetchedPosts)
-    } catch (err) {
-      console.log(err);
-    }
-    // fetch(`/api/population/${currentCountryClick}`)
-    //   .then((data) => console.log(data.json()))
-    //   .then((data) => setPosts(data));
+  const createPosts = (postData) => {
+    const arrOut = postData.map((post, index) => (
+      <Post
+        key={index}
+        title={post.title}
+        summary={post.summary}
+        link={post.link}
+      />
+    ));
+    return arrOut;
   };
 
-  let renderedPosts;
-
-  useEffect(() => {
-    console.log('test')
-    if (currentCountryClick) getPosts(currentCountryClick);
-  });
-
+  console.log(displayedPosts);
   return (
-    <div>
-      {(currentCountryClick)}
-    </div>
+
+    <section name="Articles" id="articleDiv">
+      {posts.length === 0 ? 'Click on a country to see its news!'
+        : createPosts(posts)}
+    </section>
+
   );
 };
 

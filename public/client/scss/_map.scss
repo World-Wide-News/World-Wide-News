@@ -36,14 +36,33 @@ body {
 
 .wrapper {
   display: flex;
-  height: 20rem;
+  height: fit-content;
+  border: solid black;
+
+  #articleDiv {
+    display: flex;
+    width: 20rem;
+    word-wrap: break-word;
+    flex-direction: column;
+    height: fit-content;
+
+    #individualPostWrapper {
+      font-size: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      border: red solid;
+      border-radius: 5% 5% 5% 5%;
+      padding: 0.09rem;
+    }
+  }
 
   #mapContainer {
-    border: solid black;
     width: 35rem;
     height: 25rem;
     margin: auto;
     font-size: 0.25rem;
+    margin-top: 0;
 
     .popup {
       display: flex;

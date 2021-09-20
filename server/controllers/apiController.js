@@ -34,7 +34,7 @@ apiController.getData = (req, res, next) => {
 };
 
 apiController.getArticles = async (req, res, next) => {
-  const countryName = 'australia';
+  const {countryName} = req.params;
   // add the request details for the fetch request that will get the news data
   const requestDetails = {
     method: 'GET',
@@ -43,7 +43,9 @@ apiController.getArticles = async (req, res, next) => {
       q: countryName, lang: 'en', page: '1', page_size: '5',
     },
     headers: {
-      'x-rapidapi-key': 'c9dd5fae0bmshb0c6910ac9ff173p1739a1jsn7a43e27d0bc4',
+      'x-rapidapi-key': 
+      '0a9cc778c4msh8ec778a834e5103p1683bajsn6db8490b850c',
+      // 'c9dd5fae0bmshb0c6910ac9ff173p1739a1jsn7a43e27d0bc4',
       'x-rapidapi-host': 'free-news.p.rapidapi.com',
     },
   };
@@ -52,11 +54,11 @@ apiController.getArticles = async (req, res, next) => {
     .then((response) => {
       //   console.log(response.data.articles);
       //   res.locals.articles = response.body;
-      const newObj = {};
+      const arrOut = []
       // iterate through the articles recieved and save the required fields in a new object
       for (let i = 0; i < response.data.articles.length; i += 1) {
         const currentItem = response.data.articles[i];
-        newObj[i] = {
+        arrOut[i] = {
           title: currentItem.title,
           summary: currentItem.summary,
           link: currentItem.link,
@@ -64,7 +66,7 @@ apiController.getArticles = async (req, res, next) => {
         };
       }
       // assign it to res.locals and send back
-      res.locals.articles = newObj;
+      res.locals.articles = arrOut;
 
       return next();
     }).catch((err) => {
