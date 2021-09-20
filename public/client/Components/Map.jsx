@@ -137,7 +137,6 @@ function Map(props) {
             }
             hoveredCountryId = e.features[0].id;
             if (previousCountryHover !== hoveredCountryId) {
-              console.log('change');
               fetchPopulationData(countryName)
                 .then((data) => {
                   populationData = data;

@@ -9,17 +9,13 @@ import FavoriteList from './FavoriteList.jsx';
 import NewsFeed from './NewsFeed.jsx';
 
 function App() {
-  const [currentFavorites, setFavorites] = useState([]);
+  const [currentFavorites, setFavorites] = useState({});
   const [loginStatus, changeLoginStatus] = useState(false);
   const [loginAttempt, changeAttempt] = useState(null);
   const [currentUser, changeUser] = useState(null);
   const [divListening, makeDivListen] = useState(false);
   const [currentCountryClick, setCurrentCountryClick] = useState(null);
   const [posts, setPosts] = useState([]);
-
-  const deleteFavorite = (e) => {
-    console.log(e.target.id);
-  };
 
   const loginButton = (e) => {
     const username = document.querySelector('#username');
@@ -42,7 +38,6 @@ function App() {
         .then((res) => res.json())
         .then((data) => {
           if (!Array.isArray(data)) throw Error('wrong');
-          // console.log(Array.isArray(data))
           if (Array.isArray(data)) {
             setFavorites(data);
             changeUser(username.value);
@@ -94,14 +89,24 @@ function App() {
     1000);
   };
 
+  const addFavorite = (title, link) => {
+    const titleNoSpace = title.replace(/[' ']/g, '');
+    const currentFavoritesCopy = { ...currentFavorites };
+    const favoriteUpdate = Object.assign(currentFavoritesCopy, { [titleNoSpace]: link });
+    setFavorites(favoriteUpdate);
+  };
+
+  const deleteFavorite = (title) => {
+    const titleNoSpace = title.replace(/[' ']/g, '');
+    const currentFavoritesCopy = { ...currentFavorites };
+    delete currentFavoritesCopy[titleNoSpace];
+    setFavorites(currentFavoritesCopy);
+  };
+
   return (
     <div className="wrapper">
 
-      {/* {currentCountryHover && } */}
-
       <Map
-        // currentFavorites={currentFavorites}
-        // setFavorites={setFavorites}
         setCurrentCountryClick={setCurrentCountryClick}
         setPosts={setPosts}
         getPosts={getPosts}
@@ -109,7 +114,14 @@ function App() {
       <NewsFeed
         currentCountryClick={currentCountryClick}
         posts={posts}
+        currentFavorites={currentFavorites}
+        setFavorites={setFavorites}
+        addFavorite={addFavorite}
+        deleteFavorite={deleteFavorite}
       />
+
+      {(currentFavorites) ? <FavoriteList />
+      : 'Your favorites will be stored here!'}
 
     </div>
   );
