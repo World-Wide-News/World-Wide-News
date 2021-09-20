@@ -6,7 +6,7 @@ const path = require('path');
 
 const apiController = {};
 
-apiController.getData = (req, res, next) => {
+apiController.getPopulationData = (req, res, next) => {
   const { countryName } = req.params;
   const populationRequest = {
     method: 'GET',

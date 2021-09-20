@@ -25,6 +25,15 @@ function Map(props) {
     }
   };
 
+  const removePopups = () => {
+    const popups = document.querySelectorAll('.mapboxgl-popup');
+    if (popups.length > 1) {
+      popups.forEach((element) => {
+        element.remove();
+      });
+    }
+  };
+
   useEffect(() => {
     if (map.current) return; // initialize map only once
     map.current = new mapboxGl.Map({
@@ -37,7 +46,6 @@ function Map(props) {
     let hoveredCountryId = null;
     let clickCountryId = null;
 
-    
     const randomNum = Math.random() * 255;
 
     const MAPSOURCE = 'country-boundaries';
@@ -101,22 +109,21 @@ function Map(props) {
         });
 
         map.current.on('mouseenter', `${MAP_ID}+${i}`, () => {
-          popup.remove();
+          removePopups();
           map.current.getCanvas().style.cursor = 'pointer';
-          popup.remove();
         });
 
         map.current.on('mouseleave', `${MAP_ID}+${i}`, () => {
-          popup.remove();
           map.current.getCanvas().style.cursor = '';
-          popup.remove();
-
+          removePopups();
         });
+
+        // 'mapboxgl-popup mapboxgl-popup-anchor-bottom popup';
 
         // eslint-disable-next-line no-loop-func
         map.current.on('mousemove', `${MAP_ID}+${i}`, (e) => {
+          removePopups();
           const countryName = e.features[0].properties.name_en;
-          if (popup) popup.remove();
           if (e.features.length > 0) {
             if (hoveredCountryId !== null) {
               map.current.setFeatureState(
@@ -130,26 +137,23 @@ function Map(props) {
             }
             hoveredCountryId = e.features[0].id;
             if (previousCountryHover !== hoveredCountryId) {
+              console.log('change');
               fetchPopulationData(countryName)
                 .then((data) => {
-                  
                   populationData = data;
                   popup = new mapboxGl.Popup({ closeOnMove: true })
                     .setLngLat([e.lngLat.lng, e.lngLat.lat])
                     .setHTML(`
                   <p>Country: ${countryName} </p><p>Population: ${populationData.toLocaleString()} </p>`)
-                    // .addClassName('popup')
                     .addTo(map.current);
                   popup.addClassName('popup');
                 })
                 .catch((err) => console.log(err));
             } else {
-              
               popup = new mapboxGl.Popup({ closeOnMove: true })
                 .setLngLat([e.lngLat.lng, e.lngLat.lat])
                 .setHTML(`
                 <p>Country: ${countryName} </p><p>Population: ${populationData.toLocaleString()} </p>`)
-                // .addClassName('popup')
                 .addTo(map.current);
               popup.addClassName('popup');
             }
@@ -174,7 +178,6 @@ function Map(props) {
             getPosts(countryName);
             previousCountryClicked = clickCountryId;
           }
-          
 
           map.current.setFeatureState(
             {

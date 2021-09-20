@@ -4,8 +4,6 @@ import Post from './Post.jsx';
 const Newsfeed = (props) => {
   const { currentCountryClick, posts } = props;
 
-  const displayedPosts = [];
-
   const createPosts = (postData) => {
     const arrOut = postData.map((post, index) => (
       <Post
@@ -18,7 +16,6 @@ const Newsfeed = (props) => {
     return arrOut;
   };
 
-  console.log(displayedPosts);
   return (
 
     <section name="Articles" id="articleDiv">
