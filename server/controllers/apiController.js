@@ -89,6 +89,7 @@ apiController.getArticles = async (req, res, next) => {
 
 apiController.createUser = async (req, res, next) => {
   try {
+    console.log('tset')
     const { username, password } = req.body;
 
     const newUser = {

@@ -7,7 +7,6 @@ import LogIn from './LogIn.jsx';
 import Welcome from './Welcome.jsx';
 import FavoriteList from './FavoriteList.jsx';
 import NewsFeed from './NewsFeed.jsx';
-import Button from './Button.jsx';
 
 function App() {
   const [currentFavorites, setFavorites] = useState({});
@@ -133,8 +132,7 @@ function App() {
     <div className="wrapper">
       {!loginStatus
         ? <LogIn loginButton={loginButton} signUp={signUp} loginAttempt={loginAttempt} />
-        : [<Welcome key={1} currentUser={currentUser} />,
-          <Button key={1} signOut={signOut} />,
+        : [<Welcome key={1} currentUser={currentUser} signOut={signOut} />,,
         ]}
       <Map
         setCurrentCountryClick={setCurrentCountryClick}

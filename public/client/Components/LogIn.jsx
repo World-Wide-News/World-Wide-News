@@ -24,12 +24,12 @@ function LogIn(props) {
   );
 }
 
-LogIn.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  loginButton: PropTypes.func.isRequired,
-  signUp: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  loginAttempt: PropTypes.any.isRequired,
-};
+// LogIn.propTypes = {
+//   // eslint-disable-next-line react/forbid-prop-types
+//   loginButton: PropTypes.func.isRequired,
+//   signUp: PropTypes.func.isRequired,
+//   // eslint-disable-next-line react/forbid-prop-types
+//   loginAttempt: PropTypes.any.isRequired,
+// };
 
 export default LogIn;

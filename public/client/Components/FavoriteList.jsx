@@ -12,9 +12,11 @@ function FavoriteList(props) {
   }
 
   return (
+    <div>
     <div className="favoritesList">
       Click on an article to favorite it!
       {favoritedPosts}
+    </div>
     </div>
   );
 }
