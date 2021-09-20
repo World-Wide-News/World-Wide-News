@@ -1,5 +1,5 @@
 {
-  "name": "World-Wide-News",
+  "name": "world-wide-news",
   "version": "1.0.0",
   "description": "World Wide News",
   "main": "./src/index.jsx",

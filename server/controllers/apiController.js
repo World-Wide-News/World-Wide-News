@@ -1,9 +1,6 @@
 const axios = require('axios');
-const express = require('express');
-const path = require('path');
-// const fs = require('fs');
 const bcrypt = require('bcryptjs');
-const models = require('../models/mtaModels');
+const models = require('../models/mapModels');
 
 const apiController = {};
 

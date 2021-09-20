@@ -120,8 +120,9 @@ function App() {
   };
 
   const signOut = () => {
+    console.log('test');
     changeLoginStatus(false);
-    changeAttempt(null)
+    changeAttempt(null);
     setFavorites({});
     changeUser(null);
     setCurrentCountryClick(null);
@@ -130,11 +131,10 @@ function App() {
 
   return (
     <div className="wrapper">
-
       {!loginStatus
         ? <LogIn loginButton={loginButton} signUp={signUp} loginAttempt={loginAttempt} />
-        : [<Welcome currentUser={currentUser} />, 
-        <Button onClick = {signOut}/>
+        : [<Welcome key={1} currentUser={currentUser} />,
+          <Button key={1} signOut={signOut} />,
         ]}
       <Map
         setCurrentCountryClick={setCurrentCountryClick}

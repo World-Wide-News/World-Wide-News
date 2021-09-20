@@ -33,20 +33,7 @@ userSchema.pre('save', function (next) {
 
 const Users = mongoose.model('users', userSchema);
 
-//------------------------------------
-
-// const subwaySchema = new Schema({
-//   subwayStop: String,
-//   stop_name: String,
-//   stop_lat: Number,
-//   stop_lon: Number,
-//   Lines: String,
-// });
-
-// const Subways = mongoose.model('subways', subwaySchema);
-
 // exports all the models in an object to be used in the controller
 module.exports = {
   Users,
-  // Subways,
 };

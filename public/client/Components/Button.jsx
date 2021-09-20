@@ -1,14 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function Button(props) {
-  const { onClick } = props;
+  const { signOut } = props;
+  console.log(props)
   return (
-    <div>
-      <button id = 'signOutButton' onClick={onClick}>
+      <button id="signOutButton" onClick={signOut}>
         Sign Out
       </button>
-    </div>
   );
 }
+
+// Button.propTypes = {
+//   // eslint-disable-next-line react/forbid-prop-types
+//   signOut: PropTypes.func.isRequired,
+// };
 
 export default Button;

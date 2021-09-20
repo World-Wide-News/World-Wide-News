@@ -32,28 +32,4 @@ router.post('/addFav',
 router.delete('/deleteFav', apiController.deleteFav, (req, res) => {
   res.status(200).json(res.locals.user);
 });
-
-// router.get('/map', apiController.createMap, (req, res) => {
-//   res.send(res.locals.data).status(200);
-// });
-
-// router.post('/signup',
-//   apiController.createUser,
-//   (req, res) => {
-//     res.status(200).send(res.locals.user);
-//   });
-
-// router.post('/login',
-//   apiController.verifyUser,
-//   apiController.getUserData,
-//   (req, res) => {
-//     res.status(200).json(res.locals.data);
-//   });
-
-// router.post('/addFav/?:subway',
-//   apiController.addFav,
-//   (req, res) => {
-//     res.status(200).send(res.locals.user);
-//   });
-
 module.exports = router;

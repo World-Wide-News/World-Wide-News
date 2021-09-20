@@ -1,12 +1,13 @@
 /* eslint-disable no-loop-func */
 // import mapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
 import mapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 mapboxGl.accessToken = 'pk.eyJ1IjoibGlhbWZvbnRlcyIsImEiOiJja3RsbzdjdmQxeGZxMnBwODJ1aWlpMjgwIn0.tQGIes1AYOO8KIoAJYHTzQ';
 
 function Map(props) {
-  const { setCurrentCountryClick, setPosts, getPosts } = props;
+  const { setCurrentCountryClick, getPosts } = props;
 
   let popup;
   let populationData;
@@ -242,4 +243,10 @@ function Map(props) {
     <div id="mapContainer" />
   );
 }
+
+Map.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  setCurrentCountryClick: PropTypes.any.isRequired,
+  getPosts: PropTypes.func.isRequired,
+};
 export default Map;

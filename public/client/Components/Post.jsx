@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as faStarFilled } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarEmpty } from '@fortawesome/free-regular-svg-icons';
+import PropTypes from 'prop-types';
+
 
 const Post = (props) => {
   const {
@@ -29,5 +31,16 @@ const Post = (props) => {
       </div>
     </section>
   );
+};
+
+Post.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  title: PropTypes.string.isRequired,
+  summary: PropTypes.string.isRequired,
+  link: PropTypes.string.isRequired,
+  deleteFavorite: PropTypes.func.isRequired,
+  addFavorite: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  currentFavorites: PropTypes.object.isRequired,
 };
 export default Post;
