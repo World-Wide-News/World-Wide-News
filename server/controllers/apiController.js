@@ -1,190 +1,219 @@
-// const axios = require('axios');
-// const path = require('path');
-// const fs = require('fs');
-// const bcrypt = require('bcryptjs');
-// const models = require('../models/mtaModels');
+const axios = require('axios');
+const bcrypt = require('bcryptjs');
+const models = require('../models/mapModels');
 
-// const cleanDataPath = path.join(__dirname, '../data-organization/dataClean.csv');
+const apiController = {};
 
-// const dataCSVRead = async (filePath) => {
-//   const csvFile = fs.readFileSync(filePath, { encoding: 'UTF-8' });
-//   const dataOut = await $.csv.toObjects(csvFile);
-//   return dataOut;
-// };
+apiController.getPopulationData = (req, res, next) => {
+  const { countryName } = req.params;
+  const populationRequest = {
+    method: 'GET',
+    url: 'https://world-population.p.rapidapi.com/population',
+    params: { country_name: countryName },
+    headers: {
+      'x-rapidapi-host': 'world-population.p.rapidapi.com',
+      'x-rapidapi-key': '0a9cc778c4msh8ec778a834e5103p1683bajsn6db8490b850c',
+    },
+  };
 
-// // const requestSettings = {
-// //   method: 'GET',
-// //   url: 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs',
-// //   encoding: null,
-// //   headers: {
-// //     'x-api-key': 'WiNUowkkzp9mrjVv9CR0v8hV332e9iWT1jTAcE87',
-// //   },
+  axios.request(populationRequest)
+    .then((response) => {
+      const { population } = response.data.body;
+      res.locals.population = population;
+      next();
+    }).catch((error) => {
+      const defaultErr = {
+        log: 'Error handler caught an error inside getData',
+        status: 500,
+        message: { err: `An error occurred inside a middleware named getPopulationData : ${error}` },
+      };
+      next(defaultErr);
+    });
+};
 
-// //   responseType: 'arraybuffer',
+apiController.getArticles = async (req, res, next) => {
+  const { countryName } = req.params;
+  // add the request details for the fetch request that will get the news data
+  const requestDetails = {
+    method: 'GET',
+    url: 'https://free-news.p.rapidapi.com/v1/search',
+    params: {
+      q: countryName, lang: 'en', page: '1', page_size: '5',
+    },
+    headers: {
+      'x-rapidapi-key':
+      '0a9cc778c4msh8ec778a834e5103p1683bajsn6db8490b850c',
+      // 'c9dd5fae0bmshb0c6910ac9ff173p1739a1jsn7a43e27d0bc4',
+      'x-rapidapi-host': 'free-news.p.rapidapi.com',
+    },
+  };
 
-// //   transformResponse: [function (data) {
-// //     return GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(data);
-// //   }],
+  axios.request(requestDetails)
+    .then((response) => {
+      //   console.log(response.data.articles);
+      //   res.locals.articles = response.body;
+      const arrOut = [];
+      // iterate through the articles recieved and save the required fields in a new object
+      for (let i = 0; i < response.data.articles.length; i += 1) {
+        const currentItem = response.data.articles[i];
+        arrOut[i] = {
+          title: currentItem.title,
+          summary: currentItem.summary,
+          link: currentItem.link,
+          media: currentItem.media,
+        };
+      }
+      // assign it to res.locals and send back
+      res.locals.articles = arrOut;
 
-// // };
+      return next();
+    }).catch((err) => {
+      const defaultErr = {
+        log: 'Error handler caught an error inside getArticles',
+        status: 500,
+        message: { err: `An error occurred inside a middleware named getArticles : ${err}` },
+      };
+      next(defaultErr);
+    });
 
-// const apiController = {};
+  // get the country name of the country clicked by the user on the FE and store it in a variable
 
-// apiController.getData = async (req, res, next) => {
-//   // const mtaOut = [];
+  // Send a server side request to the API
+  // search the API with COUNTRY and SAVE THE RESPONSE
+  // using axios, fetch the response and save the required details like Title, Summary, url link
+  // call next() and send it to the next middleware
+  // send it back to front end as required by the FE
+};
 
-//   // const { data } = await axios(requestSettings);
+// controller function to create a user in the worldwidenews mongoDB if it does not exist
 
-//   // data.entity.forEach((elem) => mtaOut.push(elem));
+apiController.createUser = async (req, res, next) => {
+  try {
+    console.log('tset')
+    const { username, password } = req.body;
 
-//   // // console.log(mtaOut[0])
+    const newUser = {
+      username,
+      password,
+    };
 
-//   // for (let i = 10; i < 20; i++) {
-//   //   console.log(mtaOut[i]);
-//   // }
+    const user = await models.Users.findOne({ username });
 
-//   res.sendStatus(200);
-// };
+    if (user) return res.send('User already created').status(304);
 
-// apiController.createMap = async (req, res, next) => {
-//   try {
-//     const sorted = await dataCSVRead(cleanDataPath);
+    await models.Users.create(newUser);
 
-//     res.locals.data = sorted;
-//     next();
-//   } catch {
-//     next({
-//       log: 'Express error handler caught middleware error in apiController.createMap',
-//       status: 500,
-//       message: { err: 'An error occurred' },
-//     });
-//   }
-// };
+    console.log(`User: ${username} signed up`);
 
-// apiController.getSubwayData = async (req, res, next) => {
-//   const { id } = req.params;
+    res.locals.user = username;
+    return next();
+  } catch (err) {
+    console.log(err);
+    return next({
+      log: 'Express error handler caught in apiController.createUser middleware',
+      status: 500,
+      message: { err },
+    });
+  }
+};
 
-//   try {
-//     const subway = await models.Subways.findOne({ subwayStop: id });
-//     res.locals.subway = subway;
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.getSubwayData middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
+// function to verify user when the user tries to login
+apiController.verifyUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
 
-// apiController.fetchSubwayWiki = async (req, res, next) => {
-//   try {
-//     const { subway } = res.locals;
+    const user = await models.Users.findOne({ username });
 
-//     const googleSearch = `http://google.com/search?q=${subway.stop_name}%20nyc%20subway%20station%20wikipedia`;
-//     res.locals.search = googleSearch;
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.getSubwayData middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
+    const hashedPW = user.password;
 
-// apiController.createUser = async (req, res, next) => {
-//   try {
-//     const { username, password } = req.body;
+    const compare = bcrypt.compareSync(password, hashedPW);
 
-//     const newUser = {
-//       username,
-//       password,
-//     };
+    if (!compare) throw Error('Incorrect username or password. Please try again.');
 
-//     const user = await models.Users.findOne({ username });
-//     if (user) return res.send('User already created').status(304);
+    console.log(`User: ${username} logged in`);
+    res.locals.user = username;
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.verifyUser middleware',
+      status: 500,
+      message: { err },
+    });
+  }
+};
 
-//     await models.Users.create(newUser);
+// code to get the favourite article links of the user
+apiController.getUserData = async (req, res, next) => {
+  try {
+    const user = await models.Users.findOne({ username: res.locals.user });
 
-//     console.log(`User: ${username} signed up`);
+    // changed elem => elem.name to elem=>elem.link
+    const favoriteArticles = user.favorites.map((elem) => elem);
 
-//     res.locals.user = username;
-//     return next();
-//   } catch (err) {
-//     console.log(err);
-//     return next({
-//       log: 'Express error handler caught in apiController.createUser middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
+    res.locals.data = favoriteArticles;
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.getUserData middleware',
+      status: 500,
+      message: { err },
+    });
+  }
+};
 
-// apiController.verifyUser = async (req, res, next) => {
-//   try {
-//     const { username, password } = req.body;
-//     // console.log(username, password);
+// function to add an article link as a favourite
 
-//     const user = await models.Users.findOne({ username });
+apiController.addFav = async (req, res, next) => {
+  try {
+    const { currentUser, title, link } = req.body;
 
-//     const hashedPW = user.password;
+    const query = {
+      username: currentUser,
+    };
 
-//     const compare = bcrypt.compareSync(password, hashedPW);
+    const update = {
+      favorites: { title, link },
+    };
 
-//     if (!compare) throw Error('Incorrect username or password. Please try again.');
+    await models.Users.findOneAndUpdate(query, { $push: update });
 
-//     console.log(`User: ${username} logged in`);
-//     res.locals.user = username;
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.verifyUser middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
+    console.log(`${currentUser} added title: ${title}, link: ${link}`);
 
-// apiController.getUserData = async (req, res, next) => {
-//   try {
-//     const user = await models.Users.findOne({ username: res.locals.user });
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.addFav middleware',
+      status: 500,
+      message: `Express error handler caught in apiController.addFav middleware ${err}`,
+    });
+  }
+};
 
-//     const favoriteSubways = user.favorites.map((elem) => elem.name);
+// add a function to delete an article from the favourite tag
+apiController.deleteFav = async (req, res, next) => {
+  try {
+    const { currentUser, title, link } = req.body;
 
-//     res.locals.data = favoriteSubways;
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.getUserData middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
+    const query = {
+      username: currentUser,
+    };
 
-// apiController.addFav = async (req, res, next) => {
-//   try {
-//     const { currentUser, subwayStation } = req.body;
+    const update = {
+      favorites: { title, link },
+    };
 
-//     const query = {
-//       username: currentUser,
-//     };
+    await models.Users.findOneAndUpdate(query, { $pull: update });
 
-//     const update = {
-//       favorites: { name: subwayStation },
-//     };
+    console.log(`${currentUser} deleted title: ${title}, link: ${link}`);
 
-//     await models.Users.findOneAndUpdate(query, { $push: update });
+    next();
+  } catch (err) {
+    next({
+      log: 'Express error handler caught in apiController.deleteFav middleware',
+      status: 500,
+      message: `Express error handler caught in apiController.deleteFav middleware ${err}`,
+    });
+  }
+};
 
-//     next();
-//   } catch (err) {
-//     next({
-//       log: 'Express error handler caught in apiController.addFav middleware',
-//       status: 500,
-//       message: { err },
-//     });
-//   }
-// };
-
-// module.exports = apiController;
+module.exports = apiController;

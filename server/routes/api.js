@@ -1,46 +1,35 @@
-// const express = require('express');
-// const apiController = require('../controllers/apiController');
+const express = require('express');
+const apiController = require('../controllers/apiController');
 
-// const router = express.Router();
+const router = express.Router();
 
-// // router.get('/', apiController.getData, (req, res) => {
-// //   res.send('yes');
-// // });
+router.get('/population/:countryName', apiController.getPopulationData, (req, res) => res.status(200).json(res.locals.population));
 
-// router.get('/map', apiController.createMap, (req, res) => {
-//   res.send(res.locals.data).status(200);
-// });
+router.get('/getArticles/:countryName', apiController.getArticles, (req, res) => res.status(200).json(res.locals.articles));
 
-// router.get('/station/:id',
-//   apiController.getSubwayData,
-//   (req, res) => {
-//     res.status(200).json(res.locals.subway);
-//   });
+// route to sign-up
+router.post('/signup', apiController.createUser,
+  (req, res) => {
+    res.status(200).send(res.locals.user);
+  });
 
-// router.get('/wikiStation/:id',
-//   apiController.getSubwayData,
-//   apiController.fetchSubwayWiki,
-//   (req, res) => {
-//     res.status(200).json(res.locals.search);
-//   });
+// route and middlewares to execute when user tries to login
+router.post('/login',
+  apiController.verifyUser,
+  apiController.getUserData,
+  (req, res) => {
+    res.status(200).json(res.locals.data);
+  });
 
-// router.post('/signup',
-//   apiController.createUser,
-//   (req, res) => {
-//     res.status(200).send(res.locals.user);
-//   });
+// route and middlewares to execute when user adds favourite links
+router.post('/addFav',
+  apiController.addFav,
+  (req, res) => {
+    res.status(200).json(res.locals.user);
+  });
 
-// router.post('/login',
-//   apiController.verifyUser,
-//   apiController.getUserData,
-//   (req, res) => {
-//     res.status(200).json(res.locals.data);
-//   });
-
-// router.post('/addFav/?:subway',
-//   apiController.addFav,
-//   (req, res) => {
-//     res.status(200).send(res.locals.user);
-//   });
-
-// module.exports = router;
+// route and middlewares to execute when user wants to delete a favourite link
+router.delete('/deleteFav', apiController.deleteFav, (req, res) => {
+  res.status(200).json(res.locals.user);
+});
+module.exports = router;

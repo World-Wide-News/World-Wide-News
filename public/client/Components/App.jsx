@@ -6,17 +6,15 @@ import Map from './Map.jsx';
 import LogIn from './LogIn.jsx';
 import Welcome from './Welcome.jsx';
 import FavoriteList from './FavoriteList.jsx';
+import NewsFeed from './NewsFeed.jsx';
 
 function App() {
-  const [currentFavorites, setFavorites] = useState([]);
+  const [currentFavorites, setFavorites] = useState({});
   const [loginStatus, changeLoginStatus] = useState(false);
   const [loginAttempt, changeAttempt] = useState(null);
   const [currentUser, changeUser] = useState(null);
-  const [divListening, makeDivListen] = useState(false);
-
-  const deleteFavorite = (e) => {
-    console.log(e.target.id);
-  };
+  const [currentCountryClick, setCurrentCountryClick] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   const loginButton = (e) => {
     const username = document.querySelector('#username');
@@ -38,52 +36,21 @@ function App() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (!Array.isArray(data)) throw Error('wrong')
-          // console.log(Array.isArray(data))
+          if (!Array.isArray(data)) throw Error('wrong');
           if (Array.isArray(data)) {
-            setFavorites(data);
+            setFavorites({});
+            const favoritesObj = {};
+            data.forEach((elem) => {
+              favoritesObj[elem.title] = elem.link;
+            });
+            setFavorites(favoritesObj);
             changeUser(username.value);
             changeLoginStatus(true);
-            makeDivListen(false);
           }
         })
         .catch((err) => changeAttempt('Incorrect username or password!'));
-
-      //   }
-
-      // });
     }
   };
-
-  useEffect(() => {
-    if (!divListening && loginStatus) {
-      const config = { attributes: true, childList: true, subtree: true };
-      const secretDiv = document.querySelector('#secret');
-      secretDiv.innerHTML = '';
-
-      const callback = function (mutationsList, observer) {
-        if (mutationsList[0].addedNodes[0] !== undefined) {
-          const subwayStation = mutationsList[0].addedNodes[0].data;
-          setFavorites((currentFavorites) => [...currentFavorites, subwayStation]);
-          const user = {
-            currentUser,
-            subwayStation,
-          };
-          fetch(`/api/addFav/${subwayStation}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(user),
-          });
-
-          secretDiv.innerHTML = '';
-        }
-      };
-      const observer = new MutationObserver(callback);
-
-      observer.observe(secretDiv, config);
-    }
-    if (loginStatus) makeDivListen(true);
-  });
 
   const signUp = (e) => {
     const username = document.querySelector('#username');
@@ -116,13 +83,75 @@ function App() {
     }
   };
 
+  const getPosts = (countryName) => {
+    setTimeout(async () => {
+      const postFetchData = await fetch(`/api/getArticles/${countryName}`);
+      const postsArr = await postFetchData.json();
+      setPosts(postsArr);
+    },
+    1000);
+  };
+
+  const addFavorite = (title, link) => {
+    const currentFavoritesCopy = { ...currentFavorites };
+    const favoriteUpdate = Object.assign(currentFavoritesCopy, { [title]: link });
+    setFavorites(favoriteUpdate);
+    fetch('/api/addFav', {
+      method: 'POST',
+      body: JSON.stringify({ currentUser, title, link }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  const deleteFavorite = (title, link) => {
+    const currentFavoritesCopy = { ...currentFavorites };
+    delete currentFavoritesCopy[title];
+    setFavorites(currentFavoritesCopy);
+    fetch('/api/deleteFav', {
+      method: 'DELETE',
+      body: JSON.stringify({ currentUser, title, link }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  const signOut = () => {
+    console.log('test');
+    changeLoginStatus(false);
+    changeAttempt(null);
+    setFavorites({});
+    changeUser(null);
+    setCurrentCountryClick(null);
+    setPosts([]);
+  };
+
   return (
     <div className="wrapper">
+      {!loginStatus
+        ? <LogIn loginButton={loginButton} signUp={signUp} loginAttempt={loginAttempt} />
+        : [<Welcome key={1} currentUser={currentUser} signOut={signOut} />,,
+        ]}
+      <Map
+        setCurrentCountryClick={setCurrentCountryClick}
+        setPosts={setPosts}
+        getPosts={getPosts}
+      />
+      <NewsFeed
+        currentCountryClick={currentCountryClick}
+        posts={posts}
+        currentFavorites={currentFavorites}
+        setFavorites={setFavorites}
+        addFavorite={addFavorite}
+        deleteFavorite={deleteFavorite}
+      />
 
-  
-      <Map currentFavorites={currentFavorites} setFavorites={setFavorites} />
-
-
+      <FavoriteList
+        currentFavorites={currentFavorites}
+        deleteFavorite={deleteFavorite}
+      />
     </div>
   );
 }

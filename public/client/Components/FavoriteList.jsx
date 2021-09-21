@@ -1,24 +1,30 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import PropTypes from 'prop-types';
+import FavoritedPost from './FavoritedPost.jsx';
 
 function FavoriteList(props) {
   const { currentFavorites, deleteFavorite } = props;
 
-  
-
-  const faTimesX = <span id ="delete" onClick = {deleteFavorite}><FontAwesomeIcon icon={faTimes}/></span>;
-
-  const favoriteList = currentFavorites.map((elem, index) => {
-    return <li key={elem}>{elem} {faTimesX}</li>
-  });
+  const favoritedPosts = [];
+  let counter = 0;
+  for (const [title, link] of Object.entries(currentFavorites)) {
+    favoritedPosts.push(<FavoritedPost key={counter++} title={title} link={link} deleteFavorite={deleteFavorite} />);
+  }
 
   return (
+    <div>
     <div className="favoritesList">
-      {favoriteList} 
+      Click on an article to favorite it!
+      {favoritedPosts}
+    </div>
     </div>
   );
 }
+
+FavoriteList.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  currentFavorites: PropTypes.object.isRequired,
+  deleteFavorite: PropTypes.func.isRequired,
+};
 
 export default FavoriteList;
