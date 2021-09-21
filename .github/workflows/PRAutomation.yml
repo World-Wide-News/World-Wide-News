@@ -4,12 +4,14 @@ on:
   pull_request:
     types: [opened]
     branches:
-      - main
+      - '*'
 jobs:
   PR-Card-Automation:
     runs-on: ubuntu-latest
     steps: 
       - uses: alex-page/github-project-automation-plus@v0.8.1
         with: 
-          project: resumaker
+          project: Wider-World-News
           column: Code Review
+          repo-token: ${{secrets.ITERATION_TOKEN}}
+          
