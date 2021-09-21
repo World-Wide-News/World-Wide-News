@@ -23,7 +23,7 @@ apiController.getPopulationData = (req, res, next) => {
       next();
     }).catch((error) => {
       const defaultErr = {
-        log: 'Error handler caught an error inside getData',
+        log: 'Error handler caught an error inside getPopulationData',
         status: 500,
         message: { err: `An error occurred inside a middleware named getPopulationData : ${error}` },
       };
@@ -50,21 +50,19 @@ apiController.getArticles = async (req, res, next) => {
 
   axios.request(requestDetails)
     .then((response) => {
-      //   console.log(response.data.articles);
-      //   res.locals.articles = response.body;
-      const arrOut = [];
       // iterate through the articles recieved and save the required fields in a new object
-      for (let i = 0; i < response.data.articles.length; i += 1) {
-        const currentItem = response.data.articles[i];
-        arrOut[i] = {
-          title: currentItem.title,
-          summary: currentItem.summary,
-          link: currentItem.link,
-          media: currentItem.media,
+      const articles = response.data.articles.map((elem) => {
+        const objOut = {
+          title: elem.title,
+          summary: elem.summary,
+          link: elem.link,
+          media: elem.media,
         };
-      }
+        return objOut;
+      });
+
       // assign it to res.locals and send back
-      res.locals.articles = arrOut;
+      res.locals.articles = articles;
 
       return next();
     }).catch((err) => {
@@ -77,7 +75,6 @@ apiController.getArticles = async (req, res, next) => {
     });
 
   // get the country name of the country clicked by the user on the FE and store it in a variable
-
   // Send a server side request to the API
   // search the API with COUNTRY and SAVE THE RESPONSE
   // using axios, fetch the response and save the required details like Title, Summary, url link
@@ -89,7 +86,6 @@ apiController.getArticles = async (req, res, next) => {
 
 apiController.createUser = async (req, res, next) => {
   try {
-    console.log('tset')
     const { username, password } = req.body;
 
     const newUser = {

@@ -7,16 +7,17 @@ function FavoriteList(props) {
 
   const favoritedPosts = [];
   let counter = 0;
+
   for (const [title, link] of Object.entries(currentFavorites)) {
     favoritedPosts.push(<FavoritedPost key={counter++} title={title} link={link} deleteFavorite={deleteFavorite} />);
   }
 
   return (
     <div>
-    <div className="favoritesList">
-      Click on an article to favorite it!
-      {favoritedPosts}
-    </div>
+      <div className="favoritesList">
+        Click on an article to favorite it!
+        {favoritedPosts}
+      </div>
     </div>
   );
 }
