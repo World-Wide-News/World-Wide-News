@@ -56,7 +56,7 @@ function Map(props) {
     const MAP_SOURCE_LAYER = 'country_boundaries';
     const MAP_URL = 'mapbox://mapbox.country-boundaries-v1';
 
-    const colorArrFillHoverTrue = [
+    const colorArrFillClickedTrue = [
       `rgba(${255}, ${0}, ${0}, 1)`,
       `rgba(${0}, ${255}, ${0}, 1)`,
       `rgba(${0}, ${0}, ${255}, 1)`,
@@ -65,7 +65,7 @@ function Map(props) {
       `rgba(${0}, ${200}, ${25}, 1)`,
     ];
 
-    const colorArrFillHoverFalse = [
+    const colorArrFillClickedFalse = [
       `rgba(${255}, ${0}, ${0}, 0.5)`,
       `rgba(${0}, ${255}, ${0}, 0.5)`,
       `rgba(${0}, ${0}, ${255}, 0.5)`,
@@ -97,8 +97,8 @@ function Map(props) {
           paint: {
             'fill-color': [
               'case',
-              ['boolean', ['feature-state', 'clicked'], false], colorArrFillHoverTrue[i - 1],
-              colorArrFillHoverFalse[i - 1]],
+              ['boolean', ['feature-state', 'clicked'], false], colorArrFillClickedTrue[i - 1],
+              colorArrFillClickedFalse[i - 1]],
             'fill-outline-color': [
               'case',
               ['boolean', ['feature-state', 'clicked'], false], `rgba(${0}, ${0}, ${0}, 1)`, `rgba(${255}, ${255}, ${255}, 0.5)`],
@@ -118,9 +118,7 @@ function Map(props) {
           map.current.getCanvas().style.cursor = '';
           removePopups();
         });
-
         // 'mapboxgl-popup mapboxgl-popup-anchor-bottom popup';
-
         // eslint-disable-next-line no-loop-func
         map.current.on('mousemove', `${MAP_ID}+${i}`, (e) => {
           removePopups();
