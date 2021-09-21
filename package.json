@@ -17,6 +17,7 @@
   "author": "Liam Fontes https://github.com/LiamFontes <liamfontes1244@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@aerapass/country-data": "^1.0.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
