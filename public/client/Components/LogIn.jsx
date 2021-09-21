@@ -20,6 +20,9 @@ function LogIn(props) {
           {loginAttempt}
         </div>
       </div>
+      <div>
+        <div className="g-signin2" data-onsuccess="onSignIn">Log in with Google</div>
+      </div>
     </div>
   );
 }
