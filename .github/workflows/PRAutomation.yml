@@ -11,7 +11,7 @@ jobs:
     steps: 
       - uses: alex-page/github-project-automation-plus@v0.8.1
         with: 
-          project: resumaker
+          project: wider world web
           column: Code Review
           repo-token: ${{secrets.ITERATION_TOKEN}}
           
