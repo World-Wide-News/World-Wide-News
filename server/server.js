@@ -9,17 +9,26 @@ app.use(express.urlencoded({ extended: true }));
 // eslint-disable-next-line import/no-dynamic-require
 const apiRouter = require(path.join(__dirname, 'routes/api.js'));
 const googleOauthRouter = require(path.join(__dirname, 'routes/api.js'));
+const worldBankRouter = require(path.join(
+  __dirname,
+  'routes/worldBankRouter.js'
+));
 
 if (process.env.NODE_ENV === 'production') {
   app.use('/build', express.static(path.join(__dirname, '../build')));
 
-  app.get('/', (req, res) => res.status(200).sendFile(path.join(__dirname, '../public/index.html')));
+  app.get('/', (req, res) =>
+    res.status(200).sendFile(path.join(__dirname, '../public/index.html'))
+  );
 }
 app.use('/api', apiRouter);
+app.use('/worldBank', worldBankRouter);
 app.use('/googlelogin', googleOauthRouter);
 
 app.use('/*', (req, res) => {
-  res.status(404).sendFile(path.join(__dirname, '../public/client/HTML404Page.html'));
+  res
+    .status(404)
+    .sendFile(path.join(__dirname, '../public/client/HTML404Page.html'));
 });
 
 app.use((err, req, res, next) => {

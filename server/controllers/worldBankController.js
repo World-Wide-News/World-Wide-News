@@ -15,7 +15,6 @@ worldBankController.getEconomicData = (req, res, next) => {
   const countryCode = transposedCountries[req.params.countryName.toLowerCase()];
   try {
     const url = `https://api.worldbank.org/v2/country/${countryCode}/indicator/DPANUSSPB?format=json`;
-    console.log(url);
     axios({
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
