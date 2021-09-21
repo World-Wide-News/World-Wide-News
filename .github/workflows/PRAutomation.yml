@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened]
     branches:
-      - main
+      - *
 jobs:
   PR-Card-Automation:
     runs-on: ubuntu-latest
@@ -13,3 +13,4 @@ jobs:
         with: 
           project: resumaker
           column: Code Review
+          
